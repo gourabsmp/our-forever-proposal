@@ -93,7 +93,7 @@ st.divider()
 # --- 6. TABS ---
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["❤️ Diagnostics", "📜 Commit History", "🧠 The Algorithm", "📂 Database", "💍 Final Update"])
 
-# TAB 1: Diagnostics (Photos 1 & 2)
+# TAB 1: Diagnostics
 with tab1:
     st.subheader("System Diagnostics: My Heart")
     st.write("I might be studying Python, SQL, and Machine Learning, but no algorithm could have ever predicted how incredibly lucky I'd be to find you.")
@@ -111,7 +111,7 @@ with tab1:
     with c3:
         render_polaroid("Beautiful_Day.jpeg", "Stunning", tilt="3deg")
 
-# TAB 2: Commit History (Photos 3, 4, & 5)
+# TAB 2: Commit History
 with tab2:
     st.subheader("📜 Version Control: Our Story")
     st.write("Every great software has a beautiful version history. Here is ours.")
@@ -124,11 +124,8 @@ with tab2:
     
     st.divider()
     
-    t3, t4 = st.columns([1, 2])
-    with t3: render_polaroid("us_candid.jpeg", "Building Us", tilt="-2deg")
-    with t4:
-        st.markdown("### 🔹 Commit #050: Merging Branches")
-        st.write("Navigating life together. From the late nights to the early mornings, we started building our own little world.")
+    st.markdown("### 🔹 Commit #050: Merging Branches")
+    st.write("Navigating life together. From the late nights to the early mornings, we started building our own little world.")
         
     st.divider()
     
@@ -138,7 +135,7 @@ with tab2:
         st.write("Look at us now. Every bug fixed, every issue resolved. We are ready for the ultimate production deployment.")
     with t6: render_polaroid("Glowing_Together.jpeg", "Shining Bright", tilt="1deg")
 
-# TAB 3: The Algorithm (Photo 6)
+# TAB 3: The Algorithm
 with tab3:
     st.subheader("🧠 Running The Soulmate Algorithm")
     st.write("Analyzing historical data, late-night conversations, and thousands of smiles to predict our future trajectory...")
@@ -157,9 +154,10 @@ with tab3:
         st.markdown("<br>", unsafe_allow_html=True)
         c_space1, c_img, c_space2 = st.columns([1, 2, 1])
         with c_img:
-            render_polaroid("us_red.jpeg", "The Ultimate Training Data")
+            # THIS IS YOUR NEW FESTIVAL PHOTO
+            render_polaroid("Perfect_Match.jpeg", "The Ultimate Training Data")
 
-# TAB 4: Database (Photo 7)
+# TAB 4: Database
 with tab4:
     st.subheader("📂 Querying the Database of You")
     
@@ -173,7 +171,7 @@ with tab4:
     with c_img2:
         render_polaroid("Never_Letting_Go.jpeg", "Never letting go", tilt="-1deg")
 
-# TAB 5: The Proposal (Photo 8)
+# TAB 5: The Proposal
 with tab5:
     st.subheader("🛠️ Connection Security Protocol")
     st.markdown("<p style='color: #ffb6c1; font-size: 16px;'>🔒 SYSTEM LOCKED: Emotional override required to push this update to production.</p>", unsafe_allow_html=True)
@@ -184,8 +182,8 @@ with tab5:
             st.rerun()
 
     if st.session_state.forgiven:
+        # Hearts appear immediately
         rain_hearts()
-        autoplay_audio("song.mp3")
         
         if not st.session_state.decrypted:
             with st.spinner("Decrypting Administrator Heart... Bypassing Firewalls..."):
@@ -245,9 +243,13 @@ with tab5:
                     """, height=0, width=0)
                     
                 if st.session_state.proposal_accepted:
+                    # MUSIC ONLY PLAYS HERE AFTER SHE CLICKS YES
+                    autoplay_audio("song.mp3")
                     st.snow()
                     st.markdown("<br>", unsafe_allow_html=True)
-                    st.markdown("<div class='gradient-text' style='font-size: 5em;'>SHE SAID YES! ❤️</div>", unsafe_allow_html=True)
+                    
+                    # NEW CELEBRATION TEXT
+                    st.markdown("<div class='gradient-text' style='font-size: 4em;'>LIFETIME UPDATE ACCEPTED! ❤️</div>", unsafe_allow_html=True)
 
                     c1, c2, c3 = st.columns([1, 2, 1])
                     with c2:
