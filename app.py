@@ -51,9 +51,7 @@ def render_polaroid(image_path, caption, tilt="0deg"):
     if os.path.exists(image_path):
         st.markdown(f"""
         <div style="animation: fadeInUp 1.2s ease-out forwards; opacity: 0;">
-            <div style="background: #ffffff; padding: 10px 10px 45px 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
-                        border-radius: 4px; text-align: center; margin: auto; margin-bottom: 20px; 
-                        transform: rotate({tilt}); transition: transform 0.3s;">
+            <div class="enchanted-polaroid" style="transform: rotate({tilt});">
                 <img src="data:image/jpeg;base64,{base64.b64encode(open(image_path, 'rb').read()).decode()}" style="width: 100%; border-radius: 2px;">
                 <div style="font-family: 'Brush Script MT', cursive; font-size: 26px; color: #2b2b2b; margin-top: 10px;">~ {caption} ~</div>
             </div>
@@ -72,10 +70,15 @@ lottie_heart = load_lottie("https://assets5.lottiefiles.com/packages/lf20_077re9
 lottie_ring = load_lottie("https://assets10.lottiefiles.com/packages/lf20_9n6mub8s.json")
 lottie_fireworks = load_lottie("https://assets7.lottiefiles.com/packages/lf20_aefbwihu.json")
 
-# --- 4. PREMIUM CSS (WITH MAGICAL ANIMATIONS) ---
+# --- 4. PREMIUM CSS (MAGICAL ENCHANTMENTS) ---
 st.markdown("""
     <style>
-    /* 1. The Breathing Animated Background */
+    /* 1. Magical Sparkle Cursor ✨ */
+    * {
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'><text y='20' font-size='20'>✨</text></svg>"), auto !important;
+    }
+
+    /* 2. The Breathing Animated Background */
     .stApp { 
         background: linear-gradient(-45deg, #1a0510, #0a0a0a, #2a0a18, #110008);
         background-size: 400% 400%;
@@ -87,13 +90,26 @@ st.markdown("""
         100% { background-position: 0% 50%; }
     }
     
-    /* 2. Fade In Animation for Polaroids */
+    /* 3. Enchanted Polaroids Glow */
+    .enchanted-polaroid {
+        background: #ffffff; padding: 10px 10px 45px 10px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+        border-radius: 4px; text-align: center; margin: auto; margin-bottom: 20px; 
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .enchanted-polaroid:hover {
+        box-shadow: 0 0 40px 15px rgba(255, 117, 140, 0.6), 0 10px 25px rgba(0,0,0,0.5);
+        transform: scale(1.05) rotate(0deg) !important;
+        z-index: 100;
+    }
+
+    /* 4. Fade In Animation */
     @keyframes fadeInUp {
         0% { opacity: 0; transform: translateY(30px); }
         100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* 3. Shimmering Liquid Gradient Text */
+    /* 5. Shimmering Liquid Gradient Text */
     .gradient-text { 
         background: linear-gradient(90deg, #ff758c, #ff7eb3, #ff758c); 
         background-size: 200% auto;
@@ -103,49 +119,33 @@ st.markdown("""
         padding-bottom: 5px; letter-spacing: 2px;
         animation: shine 3s linear infinite;
     }
-    @keyframes shine {
-        to { background-position: 200% center; }
-    }
-
+    @keyframes shine { to { background-position: 200% center; } }
     .sub-text { text-align: center; font-style: italic; color: #ffb6c1; font-size: 1.2em; margin-bottom: 20px;}
     
-    /* Glowing YES Button */
+    /* 6. Glowing YES Button */
     .yes-button > button { width: 100%; border-radius: 50px; background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); color: white; font-weight: 900; font-size: 26px; height: 3.5em; border: none; animation: pulse 2s infinite; z-index: 100; }
     .yes-button > button:hover { transform: scale(1.05); }
     @keyframes pulse { 0% { box-shadow: 0 0 15px rgba(0, 176, 155, 0.6); } 50% { box-shadow: 0 0 35px rgba(0, 176, 155, 1); } 100% { box-shadow: 0 0 15px rgba(0, 176, 155, 0.6); } }
 
-    /* 4. 3D Hover Metrics for Tab 1 */
-    div[data-testid="stMetric"] {
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 15px;
-        padding: 15px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    div[data-testid="stMetric"]:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(255, 117, 140, 0.4);
-    }
+    /* 7. 3D Hover Metrics */
+    div[data-testid="stMetric"] { background-color: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    div[data-testid="stMetric"]:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255, 117, 140, 0.4); }
     
-    /* 5. Fireflies (Stardust) CSS */
-    .firefly {
-        position: fixed; width: 3px; height: 3px;
-        background-color: #ffb6c1; border-radius: 50%;
-        box-shadow: 0 0 10px 2px #ffb6c1;
-        animation: fly linear infinite;
-        z-index: 0; pointer-events: none;
-    }
-    @keyframes fly {
-        0% { transform: translateY(100vh) translateX(0); opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { transform: translateY(-10vh) translateX(20px); opacity: 0; }
-    }
+    /* 8. Fireflies */
+    .firefly { position: fixed; width: 3px; height: 3px; background-color: #ffb6c1; border-radius: 50%; box-shadow: 0 0 10px 2px #ffb6c1; animation: fly linear infinite; z-index: 0; pointer-events: none; }
+    @keyframes fly { 0% { transform: translateY(100vh) translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-10vh) translateX(20px); opacity: 0; } }
+
+    /* 9. Shooting Stars */
+    .shooting-star { position: fixed; width: 4px; height: 4px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8), 0 0 20px 5px rgba(255, 182, 193, 0.5); z-index: 0; pointer-events: none; animation: shooting linear infinite; }
+    .shooting-star::before { content: ''; position: absolute; top: 50%; transform: translateY(-50%); width: 80px; height: 1px; background: linear-gradient(90deg, #fff, transparent); }
+    @keyframes shooting { 0% { transform: translateX(-10vw) translateY(-10vh) rotate(45deg); opacity: 1; } 100% { transform: translateX(110vw) translateY(110vh) rotate(45deg); opacity: 0; } }
     </style>
     """, unsafe_allow_html=True)
 
-# Generate Fireflies HTML
+# Generate Fireflies and Shooting Stars HTML
 fireflies_html = "<div class='fireflies'>" + "".join([f"<div class='firefly' style='left: {random.randint(0, 100)}vw; animation-duration: {random.randint(10, 25)}s; animation-delay: {random.randint(0, 5)}s;'></div>" for _ in range(30)]) + "</div>"
-st.markdown(fireflies_html, unsafe_allow_html=True)
+stars_html = "<div class='stars'>" + "".join([f"<div class='shooting-star' style='left: {random.randint(-20, 80)}vw; top: {random.randint(-20, 50)}vh; animation-duration: {random.randint(4, 8)}s; animation-delay: {random.randint(0, 15)}s;'></div>" for _ in range(5)]) + "</div>"
+st.markdown(fireflies_html + stars_html, unsafe_allow_html=True)
 
 # --- 5. DYNAMIC HEADER ---
 col_h1, col_h2, col_h3 = st.columns([1,3,1])
