@@ -3,6 +3,7 @@ import os
 import time
 import requests
 import base64
+import random
 import streamlit.components.v1 as components
 from streamlit_lottie import st_lottie
 
@@ -17,7 +18,7 @@ if 'proposal_accepted' not in st.session_state:
 if 'decrypted' not in st.session_state:
     st.session_state.decrypted = False
 
-# --- 3. HELPER FUNCTIONS ---
+# --- 3. HELPER FUNCTIONS & ANIMATIONS ---
 def rain_hearts():
     st.markdown("""
     <style>
@@ -49,11 +50,13 @@ def autoplay_audio(file_path: str):
 def render_polaroid(image_path, caption, tilt="0deg"):
     if os.path.exists(image_path):
         st.markdown(f"""
-        <div style="background: #ffffff; padding: 10px 10px 45px 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
-                    border-radius: 4px; text-align: center; margin: auto; margin-bottom: 20px; 
-                    transform: rotate({tilt}); transition: transform 0.3s;">
-            <img src="data:image/jpeg;base64,{base64.b64encode(open(image_path, 'rb').read()).decode()}" style="width: 100%; border-radius: 2px;">
-            <div style="font-family: 'Brush Script MT', cursive; font-size: 26px; color: #2b2b2b; margin-top: 10px;">~ {caption} ~</div>
+        <div style="animation: fadeInUp 1.2s ease-out forwards; opacity: 0;">
+            <div style="background: #ffffff; padding: 10px 10px 45px 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+                        border-radius: 4px; text-align: center; margin: auto; margin-bottom: 20px; 
+                        transform: rotate({tilt}); transition: transform 0.3s;">
+                <img src="data:image/jpeg;base64,{base64.b64encode(open(image_path, 'rb').read()).decode()}" style="width: 100%; border-radius: 2px;">
+                <div style="font-family: 'Brush Script MT', cursive; font-size: 26px; color: #2b2b2b; margin-top: 10px;">~ {caption} ~</div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -69,17 +72,80 @@ lottie_heart = load_lottie("https://assets5.lottiefiles.com/packages/lf20_077re9
 lottie_ring = load_lottie("https://assets10.lottiefiles.com/packages/lf20_9n6mub8s.json")
 lottie_fireworks = load_lottie("https://assets7.lottiefiles.com/packages/lf20_aefbwihu.json")
 
-# --- 4. PREMIUM CSS ---
+# --- 4. PREMIUM CSS (WITH MAGICAL ANIMATIONS) ---
 st.markdown("""
     <style>
-    .stApp { background: radial-gradient(circle at center, #2a0a18 0%, #0a0a0a 100%); }
-    .gradient-text { background: -webkit-linear-gradient(45deg, #ff758c, #ff7eb3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; font-weight: 900; font-size: 3.5em; padding-bottom: 5px; letter-spacing: 2px;}
+    /* 1. The Breathing Animated Background */
+    .stApp { 
+        background: linear-gradient(-45deg, #1a0510, #0a0a0a, #2a0a18, #110008);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+    }
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    /* 2. Fade In Animation for Polaroids */
+    @keyframes fadeInUp {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 3. Shimmering Liquid Gradient Text */
+    .gradient-text { 
+        background: linear-gradient(90deg, #ff758c, #ff7eb3, #ff758c); 
+        background-size: 200% auto;
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent; 
+        text-align: center; font-weight: 900; font-size: 3.5em; 
+        padding-bottom: 5px; letter-spacing: 2px;
+        animation: shine 3s linear infinite;
+    }
+    @keyframes shine {
+        to { background-position: 200% center; }
+    }
+
     .sub-text { text-align: center; font-style: italic; color: #ffb6c1; font-size: 1.2em; margin-bottom: 20px;}
+    
+    /* Glowing YES Button */
     .yes-button > button { width: 100%; border-radius: 50px; background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); color: white; font-weight: 900; font-size: 26px; height: 3.5em; border: none; animation: pulse 2s infinite; z-index: 100; }
     .yes-button > button:hover { transform: scale(1.05); }
     @keyframes pulse { 0% { box-shadow: 0 0 15px rgba(0, 176, 155, 0.6); } 50% { box-shadow: 0 0 35px rgba(0, 176, 155, 1); } 100% { box-shadow: 0 0 15px rgba(0, 176, 155, 0.6); } }
+
+    /* 4. 3D Hover Metrics for Tab 1 */
+    div[data-testid="stMetric"] {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    div[data-testid="stMetric"]:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(255, 117, 140, 0.4);
+    }
+    
+    /* 5. Fireflies (Stardust) CSS */
+    .firefly {
+        position: fixed; width: 3px; height: 3px;
+        background-color: #ffb6c1; border-radius: 50%;
+        box-shadow: 0 0 10px 2px #ffb6c1;
+        animation: fly linear infinite;
+        z-index: 0; pointer-events: none;
+    }
+    @keyframes fly {
+        0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: translateY(-10vh) translateX(20px); opacity: 0; }
+    }
     </style>
     """, unsafe_allow_html=True)
+
+# Generate Fireflies HTML
+fireflies_html = "<div class='fireflies'>" + "".join([f"<div class='firefly' style='left: {random.randint(0, 100)}vw; animation-duration: {random.randint(10, 25)}s; animation-delay: {random.randint(0, 5)}s;'></div>" for _ in range(30)]) + "</div>"
+st.markdown(fireflies_html, unsafe_allow_html=True)
 
 # --- 5. DYNAMIC HEADER ---
 col_h1, col_h2, col_h3 = st.columns([1,3,1])
@@ -91,7 +157,7 @@ with col_h2:
 st.divider()
 
 # --- 6. TABS ---
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["❤️ Diagnostics", "📜 Commit History", "🧠 The Algorithm", "📂 Database", "💍 Final Update"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["❤️ Diagnostics", "🎬 Version Control", "🧠 The Algorithm", "📂 Database", "💍 Final Update"])
 
 # TAB 1: Diagnostics
 with tab1:
@@ -111,10 +177,19 @@ with tab1:
     with c3:
         render_polaroid("Beautiful_Day.jpeg", "Stunning", tilt="3deg")
 
-# TAB 2: Commit History
+# TAB 2: Commit History & VIDEO
 with tab2:
-    st.subheader("📜 Version Control: Our Story")
-    st.write("Every great software has a beautiful version history. Here is ours.")
+    st.subheader("🎬 The Highlight Reel")
+    st.write("Every great software has a beautiful version history. Here is ours in motion.")
+    
+    v_col1, v_col2, v_col3 = st.columns([1, 4, 1])
+    with v_col2:
+        if os.path.exists("our_video.mp4"):
+            st.video("our_video.mp4")
+        else:
+            st.info("🎥 Waiting for our video to be uploaded to the cloud...")
+            
+    st.divider()
     
     t1, t2 = st.columns([2, 1])
     with t1:
@@ -154,7 +229,6 @@ with tab3:
         st.markdown("<br>", unsafe_allow_html=True)
         c_space1, c_img, c_space2 = st.columns([1, 2, 1])
         with c_img:
-            # THIS IS YOUR NEW FESTIVAL PHOTO
             render_polaroid("Perfect_Match.jpeg", "The Ultimate Training Data")
 
 # TAB 4: Database
@@ -182,7 +256,6 @@ with tab5:
             st.rerun()
 
     if st.session_state.forgiven:
-        # Hearts appear immediately
         rain_hearts()
         
         if not st.session_state.decrypted:
@@ -243,13 +316,26 @@ with tab5:
                     """, height=0, width=0)
                     
                 if st.session_state.proposal_accepted:
-                    # MUSIC ONLY PLAYS HERE AFTER SHE CLICKS YES
                     autoplay_audio("song.mp3")
                     st.snow()
                     st.markdown("<br>", unsafe_allow_html=True)
                     
-                    # NEW CELEBRATION TEXT
-                    st.markdown("<div class='gradient-text' style='font-size: 4em;'>LIFETIME UPDATE ACCEPTED! ❤️</div>", unsafe_allow_html=True)
+                    st.markdown("""
+                        <style>
+                        @keyframes neonGlow {
+                            0% { text-shadow: 0 0 10px #ff758c, 0 0 20px #ff758c, 0 0 30px #ff758c; }
+                            50% { text-shadow: 0 0 20px #ff7eb3, 0 0 30px #ff7eb3, 0 0 40px #ff7eb3; }
+                            100% { text-shadow: 0 0 10px #ff758c, 0 0 20px #ff758c, 0 0 30px #ff758c; }
+                        }
+                        .glowing-success {
+                            background: -webkit-linear-gradient(45deg, #ff758c, #ff7eb3);
+                            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                            text-align: center; font-weight: 900; font-size: 4em;
+                            animation: neonGlow 2s infinite alternate;
+                        }
+                        </style>
+                        <div class='glowing-success'>LIFETIME UPDATE ACCEPTED! ❤️</div>
+                    """, unsafe_allow_html=True)
 
                     c1, c2, c3 = st.columns([1, 2, 1])
                     with c2:
