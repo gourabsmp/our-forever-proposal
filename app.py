@@ -2,6 +2,8 @@ import streamlit as st
 import os
 import time
 import requests
+import base64
+import streamlit.components.v1 as components
 from streamlit_lottie import st_lottie
 
 # --- 1. PAGE CONFIGURATION ---
@@ -12,21 +14,16 @@ if 'forgiven' not in st.session_state:
     st.session_state.forgiven = False
 if 'proposal_accepted' not in st.session_state:
     st.session_state.proposal_accepted = False
-if 'no_clicks' not in st.session_state:
-    st.session_state.no_clicks = 0
 if 'decrypted' not in st.session_state:
     st.session_state.decrypted = False
 
-# --- 3. CUSTOM HEART BALLOON ANIMATION ---
+# --- 3. HELPER FUNCTIONS (HEARTS & AUDIO) ---
 def rain_hearts():
     st.markdown("""
     <style>
     .heart-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; overflow: hidden; }
     .heart-balloon { position: absolute; bottom: -100px; font-size: 40px; animation: floatUp 5s ease-in infinite; opacity: 0.8; }
-    @keyframes floatUp {
-        0% { transform: translateY(0) scale(0.8); opacity: 1; }
-        100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
-    }
+    @keyframes floatUp { 0% { transform: translateY(0) scale(0.8); opacity: 1; } 100% { transform: translateY(-120vh) scale(1.2); opacity: 0; } }
     .h1 { left: 10%; animation-duration: 4s; animation-delay: 0s; font-size: 50px; }
     .h2 { left: 30%; animation-duration: 6s; animation-delay: 1s; font-size: 60px; }
     .h3 { left: 50%; animation-duration: 5s; animation-delay: 0.5s; font-size: 45px; }
@@ -36,17 +33,23 @@ def rain_hearts():
     .h7 { left: 80%; animation-duration: 6.5s; animation-delay: 0.2s; font-size: 70px; }
     </style>
     <div class="heart-container">
-        <div class="heart-balloon h1">❤️</div>
-        <div class="heart-balloon h2">💖</div>
-        <div class="heart-balloon h3">❤️</div>
-        <div class="heart-balloon h4">💕</div>
-        <div class="heart-balloon h5">❤️</div>
-        <div class="heart-balloon h6">💗</div>
-        <div class="heart-balloon h7">💖</div>
+        <div class="heart-balloon h1">❤️</div><div class="heart-balloon h2">💖</div><div class="heart-balloon h3">❤️</div>
+        <div class="heart-balloon h4">💕</div><div class="heart-balloon h5">❤️</div><div class="heart-balloon h6">💗</div><div class="heart-balloon h7">💖</div>
     </div>
     """, unsafe_allow_html=True)
 
-# --- 4. LOAD ANIMATIONS SAFELY ---
+def autoplay_audio(file_path: str):
+    if os.path.exists(file_path):
+        with open(file_path, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+            md = f"""
+                <audio autoplay loop>
+                <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                </audio>
+                """
+            st.markdown(md, unsafe_allow_html=True)
+
 @st.cache_data
 def load_lottie(url):
     try:
@@ -59,30 +62,29 @@ lottie_heart = load_lottie("https://assets5.lottiefiles.com/packages/lf20_077re9
 lottie_ring = load_lottie("https://assets10.lottiefiles.com/packages/lf20_9n6mub8s.json")
 lottie_fireworks = load_lottie("https://assets7.lottiefiles.com/packages/lf20_aefbwihu.json")
 
-# --- 5. PREMIUM CSS ---
+# --- 4. PREMIUM CSS ---
 st.markdown("""
     <style>
     .gradient-text { background: -webkit-linear-gradient(45deg, #ff0844, #ffb199); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; font-weight: 900; font-size: 3em; padding-bottom: 10px; }
     .yes-button > button { width: 100%; border-radius: 50px; background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); color: white; font-weight: 900; font-size: 26px; height: 3.5em; border: none; animation: pulse 2s infinite; transition: 0.3s; }
     .yes-button > button:hover { transform: scale(1.05); }
     @keyframes pulse { 0% { box-shadow: 0 0 10px rgba(0, 176, 155, 0.4); } 50% { box-shadow: 0 0 30px rgba(0, 176, 155, 0.9); } 100% { box-shadow: 0 0 10px rgba(0, 176, 155, 0.4); } }
-    .no-button > button { width: 100%; border-radius: 50px; background-color: #2b2b2b; color: #ff4b4b; border: 1px solid #ff4b4b; font-weight: bold; height: 3.5em; transition: 0.1s; }
-    .no-button > button:hover { animation: shake 0.4s; animation-iteration-count: infinite; background-color: #ff4b4b; color: white; }
-    @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 25% { transform: translate(-2px, -2px) rotate(-1deg); } 50% { transform: translate(2px, 2px) rotate(1deg); } 75% { transform: translate(-2px, 2px) rotate(-1deg); } 100% { transform: translate(1px, -1px) rotate(0deg); } }
+    
+    /* The Runaway Button CSS Setup */
+    .no-button > button { width: 100%; border-radius: 50px; background-color: #2b2b2b; color: #ff4b4b; border: 1px solid #ff4b4b; font-weight: bold; height: 3.5em; position: relative; z-index: 999; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 6. DYNAMIC HEADER ---
+# --- 5. DYNAMIC HEADER ---
 col_h1, col_h2, col_h3 = st.columns([1,2,1])
 with col_h2:
-    if lottie_heart:
-        st_lottie(lottie_heart, height=150, key="heart")
+    if lottie_heart: st_lottie(lottie_heart, height=150, key="heart")
     st.markdown("<div class='gradient-text'>Deployment: Our_Forever.exe</div>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; font-style: italic; color: #a8a8a8;'>A personalized software update for my future wife.</p>", unsafe_allow_html=True)
 
 st.divider()
 
-# --- 7. TABS ---
+# --- 6. TABS ---
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔍 Diagnostics", "📊 The Dataset", "🧠 Predictive ML Model", "💖 Query DB", "🚀 Final Deployment"])
 
 with tab1:
@@ -121,23 +123,21 @@ with tab4:
     with st.expander("📌 Query 2: My favorite feature about you"):
         st.write("Your smile. It's the only code in my life that executes perfectly every single time.")
 
-# TAB 5: THE GRAND REVEAL (NO MORE SLIDER)
+# TAB 5: THE GRAND REVEAL
 with tab5:
     st.subheader("🛠️ Connection Security Protocol")
     st.markdown("<p style='color: #a8a8a8; font-size: 16px;'>🔒 SYSTEM LOCKED: Emotional override required to push this update to production.</p>", unsafe_allow_html=True)
     
-    # THE FORGIVENESS BUTTON
     if not st.session_state.forgiven:
         if st.button("❤️ INITIATE FORGIVENESS PROTOCOL ❤️"):
             st.session_state.forgiven = True
             st.rerun()
 
-    # AFTER SHE FORGIVES
     if st.session_state.forgiven:
-        # Trigger the custom floating hearts!
+        # Floating Hearts & Invisible Music!
         rain_hearts()
+        autoplay_audio("song.mp3")
         
-        # The Hacker Decryption Sequence
         if not st.session_state.decrypted:
             with st.spinner("Decrypting Administrator Heart... Bypassing Firewalls..."):
                 time.sleep(2.5)
@@ -161,20 +161,41 @@ with tab5:
                     st.markdown('<div class="yes-button">', unsafe_allow_html=True)
                     if st.button("YES, I WILL MARRY YOU! 💍"):
                         st.session_state.proposal_accepted = True
-                        st.session_state.no_clicks = 0
                     st.markdown('</div>', unsafe_allow_html=True)
                     
                 with b_col2:
                     st.markdown('<div class="no-button">', unsafe_allow_html=True)
-                    if st.button("No, cancel update"):
-                        st.session_state.no_clicks += 1
+                    # The NO button is rendered normally here, but JavaScript will hijack it!
+                    st.button("No, cancel update")
                     st.markdown('</div>', unsafe_allow_html=True)
 
-                # Refusal Logic
-                if st.session_state.no_clicks > 0 and not st.session_state.proposal_accepted:
-                    st.error(f"⚠️ FATAL SYSTEM ERROR: 'No' is strictly forbidden by my heart's protocol. (Attempt {st.session_state.no_clicks}). Please click YES.")
+                # --- THE JAVASCRIPT PAYLOAD (The Fish in Water effect) ---
+                components.html(
+                    """
+                    <script>
+                    const doc = window.parent.document;
+                    const buttons = doc.querySelectorAll('.no-button button');
+                    buttons.forEach(btn => {
+                        if (!btn.dataset.dodging) {
+                            const moveBtn = function(e) {
+                                e.preventDefault(); // Stops her from clicking it on mobile
+                                const x = Math.random() * 400 - 200; // Jumps left or right
+                                const y = Math.random() * 200 - 100; // Jumps up or down
+                                this.style.transform = `translate(${x}px, ${y}px)`;
+                                this.style.transition = 'all 0.15s ease-out';
+                            };
+                            // Triggers when mouse hovers on laptop
+                            btn.addEventListener('mouseover', moveBtn);
+                            // Triggers when finger taps on phone
+                            btn.addEventListener('touchstart', moveBtn, {passive: false});
+                            btn.dataset.dodging = 'true';
+                        }
+                    });
+                    </script>
+                    """,
+                    height=0, width=0
+                )
                     
-                # Celebration Logic (BUG FIXED HERE!)
                 if st.session_state.proposal_accepted:
                     st.snow()
                     st.markdown("<br>", unsafe_allow_html=True)
@@ -182,13 +203,9 @@ with tab5:
 
                     c1, c2, c3 = st.columns([1, 2, 1])
                     with c2:
-                        if lottie_fireworks:
-                            st_lottie(lottie_fireworks, height=200, key="fireworks")
-                        if lottie_ring:
-                            st_lottie(lottie_ring, height=250, key="ring_final")
-                        # The error is completely removed from this line:
-                        if os.path.exists("us_red.jpeg"):
-                            st.image("us_red.jpeg", use_container_width=True)
+                        if lottie_fireworks: st_lottie(lottie_fireworks, height=200, key="fireworks")
+                        if lottie_ring: st_lottie(lottie_ring, height=250, key="ring_final")
+                        if os.path.exists("us_red.jpeg"): st.image("us_red.jpeg", use_container_width=True)
 
                     st.markdown("<br>", unsafe_allow_html=True)
                     msg = "I promise to love you, support your dreams, and debug our life together forever."
