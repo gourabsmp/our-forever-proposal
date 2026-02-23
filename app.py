@@ -5,7 +5,7 @@ import requests
 from streamlit_lottie import st_lottie
 
 # --- 1. PAGE CONFIGURATION ---
-st.set_page_config(page_title="Project Forever v5.0", page_icon="💍", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Project Forever v6.0", page_icon="💍", layout="wide", initial_sidebar_state="collapsed")
 
 # --- 2. INITIALIZE MEMORY (SESSION STATE) ---
 if 'proposal_accepted' not in st.session_state:
@@ -107,6 +107,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔍 Diagnostics", "📊 The Dataset", 
 with tab1:
     st.subheader("System Diagnostics & Apology")
     st.write("I know I've caused some bugs in our system lately. I might be studying machine learning, but no algorithm could have ever predicted how lucky I'd be to find you.")
+    st.write("Even when I'm grinding through those 5:30 PM to 3:30 AM shifts, you are the one keeping my system running. You are the best part of my day, every single day.")
     col1, col2, col3 = st.columns(3)
     col1.metric(label="Arguments Won By You", value="100%", delta="Always Right")
     col2.metric(label="My Love For You", value="Infinite", delta="Growing Daily")
@@ -139,12 +140,15 @@ with tab4:
     with st.expander("📌 Query 2: My favorite feature about you"):
         st.write("Your smile. It's the only code in my life that executes perfectly every single time.")
 
-# TAB 5: THE GRAND REVEAL
+# TAB 5: THE GRAND REVEAL (NEW ANIMATION)
 with tab5:
     st.subheader("🛠️ Connection Security Protocol")
-    mood = st.select_slider("", options=["Still Angry 😤", "Processing Data... ⚙️", "Missing You 🥺", "I Forgive You ❤️"], value="Still Angry 😤")
+    st.markdown("<p style='color: #a8a8a8; font-size: 16px;'>🔒 SYSTEM LOCKED: Administrator approval required to proceed.</p>", unsafe_allow_html=True)
+    
+    # THE NEW TOGGLE SWITCH (Replaces the slider)
+    unlock = st.toggle("Initiate Override & Forgive Me 🔓")
 
-    if mood == "I Forgive You ❤️":
+    if unlock:
         # The Hacker Decryption Sequence
         if not st.session_state.decrypted:
             with st.spinner("Decrypting Administrator Heart... Bypassing Firewalls..."):
@@ -154,7 +158,7 @@ with tab5:
 
         if st.session_state.decrypted:
             st.balloons()
-            st.success("Access Granted. Welcome home.")
+            st.success("Firewalls disabled. Heart fully unlocked. Welcome to my forever.")
             st.divider()
             
             st.markdown("<div class='gradient-text' style='font-size: 2.5em;'>💍 The Final Commitment</div>", unsafe_allow_html=True)
