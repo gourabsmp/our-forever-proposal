@@ -66,12 +66,9 @@ lottie_fireworks = load_lottie("https://assets7.lottiefiles.com/packages/lf20_ae
 st.markdown("""
     <style>
     .gradient-text { background: -webkit-linear-gradient(45deg, #ff0844, #ffb199); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; font-weight: 900; font-size: 3em; padding-bottom: 10px; }
-    .yes-button > button { width: 100%; border-radius: 50px; background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); color: white; font-weight: 900; font-size: 26px; height: 3.5em; border: none; animation: pulse 2s infinite; transition: 0.3s; }
+    .yes-button > button { width: 100%; border-radius: 50px; background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); color: white; font-weight: 900; font-size: 26px; height: 3.5em; border: none; animation: pulse 2s infinite; transition: 0.3s; z-index: 100; }
     .yes-button > button:hover { transform: scale(1.05); }
     @keyframes pulse { 0% { box-shadow: 0 0 10px rgba(0, 176, 155, 0.4); } 50% { box-shadow: 0 0 30px rgba(0, 176, 155, 0.9); } 100% { box-shadow: 0 0 10px rgba(0, 176, 155, 0.4); } }
-    
-    /* The Runaway Button CSS Setup */
-    .no-button > button { width: 100%; border-radius: 50px; background-color: #2b2b2b; color: #ff4b4b; border: 1px solid #ff4b4b; font-weight: bold; height: 3.5em; position: relative; z-index: 999; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -134,7 +131,7 @@ with tab5:
             st.rerun()
 
     if st.session_state.forgiven:
-        # Floating Hearts & Invisible Music!
+        # Floating Hearts & Music!
         rain_hearts()
         autoplay_audio("song.mp3")
         
@@ -164,33 +161,47 @@ with tab5:
                     st.markdown('</div>', unsafe_allow_html=True)
                     
                 with b_col2:
-                    st.markdown('<div class="no-button">', unsafe_allow_html=True)
-                    # The NO button is rendered normally here, but JavaScript will hijack it!
-                    st.button("No, cancel update")
-                    st.markdown('</div>', unsafe_allow_html=True)
+                    # The plain button rendered by Streamlit
+                    st.button("No, cancel update", key="no_btn_static")
 
-                # --- THE JAVASCRIPT PAYLOAD (The Fish in Water effect) ---
+                # --- BULLETPROOF JAVASCRIPT PAYLOAD ---
                 components.html(
                     """
                     <script>
-                    const doc = window.parent.document;
-                    const buttons = doc.querySelectorAll('.no-button button');
-                    buttons.forEach(btn => {
-                        if (!btn.dataset.dodging) {
-                            const moveBtn = function(e) {
-                                e.preventDefault(); // Stops her from clicking it on mobile
-                                const x = Math.random() * 400 - 200; // Jumps left or right
-                                const y = Math.random() * 200 - 100; // Jumps up or down
-                                this.style.transform = `translate(${x}px, ${y}px)`;
-                                this.style.transition = 'all 0.15s ease-out';
-                            };
-                            // Triggers when mouse hovers on laptop
-                            btn.addEventListener('mouseover', moveBtn);
-                            // Triggers when finger taps on phone
-                            btn.addEventListener('touchstart', moveBtn, {passive: false});
-                            btn.dataset.dodging = 'true';
-                        }
-                    });
+                    const huntAndAnimate = () => {
+                        const parentDoc = window.parent.document;
+                        const buttons = parentDoc.querySelectorAll('button');
+                        
+                        buttons.forEach(btn => {
+                            // Find the button by its exact text
+                            if (btn.innerText.includes("No, cancel update") && !btn.dataset.dodging) {
+                                btn.dataset.dodging = 'true';
+                                
+                                // Make it red and styled
+                                btn.style.backgroundColor = '#ff4b4b';
+                                btn.style.color = 'white';
+                                btn.style.border = '1px solid #ff4b4b';
+                                btn.style.borderRadius = '50px';
+                                btn.style.position = 'relative';
+                                btn.style.zIndex = '999';
+                                
+                                const moveBtn = function(e) {
+                                    e.preventDefault();
+                                    const x = Math.floor(Math.random() * 400) - 200; // Jump further
+                                    const y = Math.floor(Math.random() * 300) - 150;
+                                    this.style.transform = `translate(${x}px, ${y}px)`;
+                                    this.style.transition = 'transform 0.15s ease-out';
+                                };
+                                
+                                // Attach mouse and touch listeners
+                                btn.addEventListener('mouseenter', moveBtn);
+                                btn.addEventListener('touchstart', moveBtn, {passive: false});
+                            }
+                        });
+                    };
+                    
+                    // Run the hunter function constantly so Streamlit can't hide from it
+                    setInterval(huntAndAnimate, 300);
                     </script>
                     """,
                     height=0, width=0
